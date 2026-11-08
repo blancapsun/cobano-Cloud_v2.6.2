@@ -1,0 +1,46 @@
+CÓBANO CLOUD 2.6.0 — CONFIGURACIÓN DE CATÁLOGO COMPARTIDO / ADMINISTRADORES
+
+INCLUIDO EN LA APP
+- Inicio de sesión con Google/Gmail (Firebase Authentication).
+- Catálogo compartido de productos y plagas/enfermedades (Firestore).
+- Fotos y fichas de producto (Firebase Storage).
+- Usuario: consulta catálogo y envía propuestas.
+- Administrador: publica, elimina, sincroniza, aprueba propuestas y administra otros admins.
+- Administradores adicionales se agregan por correo; deben iniciar sesión con ese Gmail.
+
+IMPORTANTE
+Esta app necesita una configuración propia de Firebase. No viene conectada a una cuenta/proyecto Firebase de Alan porque eso requiere acceso y credenciales de la cuenta. El catálogo compartido y los logins no funcionarán hasta completar los pasos.
+
+PASOS PARA CONFIGURAR
+1. Abrir https://console.firebase.google.com/ e iniciar sesión con tu Gmail.
+2. Crear un proyecto Firebase (ej. CobanoCloud).
+3. En el proyecto, agregar aplicación Web (ícono </>) y copiar la configuración Web.
+4. Authentication > Sign-in method > habilitar Google.
+5. Authentication > Settings > Authorized domains: agregar el dominio donde alojarás CÓBANO.
+   Para prueba local, puede requerir usar localhost o desplegar la app en Firebase Hosting.
+6. Firestore Database > Create database.
+7. Storage > Get started.
+8. Copiar FIRESTORE_RULES.txt a Firestore > Rules y publicar.
+9. Copiar STORAGE_RULES.txt a Storage > Rules y publicar.
+10. En Firestore > Data, crear colección nurseryCatalogAdmins.
+    Crear documento con ID EXACTO: tu-correo-gmail-en-minúsculas
+    Ejemplo ID: alan@gmail.com
+    Campos:
+      email (string): alan@gmail.com
+      role (string): admin
+      root (boolean): true
+      createdAt (number): timestamp actual en milisegundos
+    Este primer registro es el administrador raíz. No puede quitarse desde la app.
+11. Abrir CÓBANO Cloud > Vivero > Catálogo compartido.
+12. Pegar la configuración Web Firebase en “Conectar catálogo compartido” y presionar “Guardar y conectar”.
+13. Presionar “Entrar con Gmail” y usar la cuenta que coincide con el documento raíz.
+14. Ya dentro como administrador, podrás agregar otros Gmail desde Administración de usuarios.
+15. Para publicar los productos locales que ya tenías, usa “Sincronizar productos y plagas locales”.
+
+FLUJO DE USUARIOS
+- Usuarios normales: inician sesión, ven catálogo compartido, envían propuestas.
+- Administradores: revisan propuestas pendientes y eligen Aprobar/Rechazar.
+- Al aprobar, el producto o plaga queda visible en el catálogo común.
+
+INTEGRACIÓN DE IA
+La IA usa el endpoint de OpenAI configurado previamente en el módulo Asistente. Para usarla desde otros dispositivos, el servidor API debe estar publicado de forma segura (HTTPS) y el endpoint configurado en la app. La clave OpenAI debe estar solamente en servidor, nunca en el navegador.

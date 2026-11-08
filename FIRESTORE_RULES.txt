@@ -1,0 +1,36 @@
+// Firestore Rules para CÓBANO Cloud 2.6.0
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    function admin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/nurseryCatalogAdmins/$(request.auth.token.email));
+    }
+
+    match /nurseryCatalogAdmins/{email} {
+      allow read: if admin() || (signedIn() && request.auth.token.email == email);
+      allow create, update: if admin();
+      allow delete: if admin() && resource.data.root != true;
+    }
+
+    match /nurseryCatalogProducts/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if admin();
+    }
+
+    match /nurseryCatalogPests/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if admin();
+    }
+
+    match /nurseryCatalogSuggestions/{id} {
+      allow create: if signedIn() &&
+        request.resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.status == 'pending';
+      allow read, update, delete: if admin();
+    }
+  }
+}

@@ -1,0 +1,21 @@
+// Firebase Storage Rules para CÓBANO Cloud
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    function admin() {
+      return signedIn() &&
+        firestore.exists(/databases/(default)/documents/nurseryCatalogAdmins/$(request.auth.token.email));
+    }
+    match /nursery/{allPaths=**} {
+      allow read: if signedIn();
+      allow write: if admin();
+    }
+    match /suggestions/{uid}/{allPaths=**} {
+      allow read: if signedIn() && (request.auth.uid == uid || admin());
+      allow write: if signedIn() && request.auth.uid == uid;
+    }
+  }
+}
