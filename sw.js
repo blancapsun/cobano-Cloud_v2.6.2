@@ -1,4 +1,4 @@
-const CACHE = 'cobano-cloud-v2.6.2';
+const CACHE = 'cobano-cloud-v2.6.4';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 const EXTERNAL = [
   'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
